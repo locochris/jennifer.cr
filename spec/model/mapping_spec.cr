@@ -14,30 +14,30 @@ describe Jennifer::Model::Mapping do
     end
 
     it "raises exception with errors if invalid on save!" do
-        contact = Factory.create_contact
-        contact.age = 12
-        contact.name = "much too long for name"
-        contact.description = "much too long for description"
-        begin
-          contact.save!
-          fail("should raise validation exception")
-        rescue ex : Jennifer::RecordInvalid
-          ex.errors.size.should eq(3)
-          raw_errors = ex.errors.@errors
-          validate_error(raw_errors[0], :age, "should be in 13..75 but is 12")
-          validate_error(raw_errors[1], :name, "should be lte 15 but is much too long for name")
-          validate_error(raw_errors[2], :description, "Too large description")
-        end
+      contact = Factory.create_contact
+      contact.age = 12
+      contact.name = "much too long for name"
+      contact.description = "much too long for description"
+      begin
+        contact.save!
+        fail("should raise validation exception")
+      rescue ex : Jennifer::RecordInvalid
+        ex.errors.size.should eq(3)
+        raw_errors = ex.errors.@errors
+        validate_error(raw_errors[0], :age, "should be in 13..75 but is 12")
+        validate_error(raw_errors[1], :name, "should be lte 15 but is much too long for name")
+        validate_error(raw_errors[2], :description, "Too large description")
+      end
     end
 
     it "should not raise validation exception when skipped" do
-        contact = Factory.create_contact
-        contact.age = 12
-        begin
-          contact.save!(true)
-        rescue ex : Jennifer::RecordInvalid
-          fail("should not raise validation exception")
-        end
+      contact = Factory.create_contact
+      contact.age = 12
+      begin
+        contact.save!(true)
+      rescue ex : Jennifer::RecordInvalid
+        fail("should not raise validation exception")
+      end
     end
   end
 
@@ -440,6 +440,13 @@ describe Jennifer::Model::Mapping do
       c.__update_updated_at
       c.updated_at!.should_not be_nil
       ((c.updated_at! - Time.now).total_seconds < 1).should be_true
+    end
+  end
+
+  describe "#review" do
+    it "should prepare proper format" do
+      str = Factory.build_contact.review
+      str.should match(/@id=nil, @name="Deepthi", @ballance=nil, @age=28, @gender="male", @description=nil, @created_at=nil, @updated_at=nil, @tags=nil>/)
     end
   end
 end

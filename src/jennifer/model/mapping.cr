@@ -150,6 +150,22 @@ module Jennifer
           {{primary_auto_incrementable}}
         end
 
+        def review
+          String.build do |s|
+            s << "<#" << {{@type.name.id.stringify}} << ":0x"
+            object_id.to_s(16, s)
+
+            {% for field, value, i in properties %}
+              {% if i > 0 %}
+                s << ","
+              {% end %}
+              s << " @{{field.id}}="
+              @{{field.id}}.inspect(s)
+            {% end %}
+            s << ">"
+          end
+        end
+
         @new_record = true
         @destroyed = false
 
